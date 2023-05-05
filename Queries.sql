@@ -85,4 +85,12 @@ select billing_country,name,Purchases from PurchasesByCountry where RowNumber=1
 --11. Write a query that determines the customer that has spent the most on music for each
 --country. Write a query that returns the country along with the top customer and how
 --much they spent. For countries where the top amount spent is shared, provide all
---customers who spent this amount
+--customers who spent this amountselect temptable.first_name,temptable.last_name,temptable.billing_country,Totalfrom (
+select 
+	first_name,last_name,billing_country,SUM(total) as Total
+	,ROW_NUMBER() over (partition by billing_country order by SUM(total) desc) as RowNumber
+from Customer join Invoice
+on Customer.customer_id=Invoice.customer_id
+group by first_name,last_name,billing_country
+)as temptable
+where RowNumber=1
